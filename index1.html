@@ -1,0 +1,449 @@
+<style>
+  :root {
+    --primary-color: #ffcf49;
+    --secondary-color: #ff3a60;
+    --bg-color: #fff;
+    --alt-bg-color: #fff3d8;
+    --border-color: #facd89;
+    --text-color: #F83C0E;
+  }
+
+  .luck-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+  }
+
+  .luck-bg {
+    background: var(--primary-color);
+    width: 20rem;
+    height: 20rem;
+    border-radius: 50%;
+    margin: 0 auto;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+
+  .luck-wheel-bg,
+  .luck-wheel-bg-main {
+    background: var(--bg-color);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rotate-style {
+    transition: transform 5000ms cubic-bezier(0.17, 0.67, 0.22, 0.99);
+  }
+
+  .luck-wheel-sector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform-origin: 0% 100%;
+    border: 1px solid var(--border-color);
+    border-right: 0;
+    border-top: 0;
+    box-sizing: border-box;
+  }
+
+  .luck-wheel-sector:nth-child(2n) {
+    background: var(--alt-bg-color);
+  }
+
+  .wheel-main {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .prize-list {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .prize-item {
+    position: absolute;
+    left: 50%;
+    height: 50%;
+    padding-top: 15px;
+    box-sizing: border-box;
+    text-align: center;
+    transform-origin: 50% 100%;
+    color: var(--text-color);
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .prize-item div {
+    width: 100%;
+  }
+
+  .prize-item img {
+    max-width: 45%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .prize-pointer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: var(--secondary-color);
+    width: 4rem;
+    height: 4rem;
+    margin-left: -2rem;
+    margin-top: -2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(255, 58, 96, 0.4);
+    transition: transform 0.3s ease;
+  }
+
+  .prize-pointer:hover {
+    transform: scale(1.05);
+  }
+
+  .prize-pointer:active {
+    transform: scale(0.95);
+  }
+
+  .prize-pointer::after {
+    position: absolute;
+    left: 50%;
+    top: -1.5rem;
+    width: 0;
+    height: 0;
+    margin-left: -1rem;
+    border: 1rem solid;
+    border-color: transparent transparent var(--secondary-color);
+    content: '';
+  }
+
+  .result-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease;
+  }
+
+  .result-message.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .result-message h3 {
+    margin: 0 0 10px 0;
+    color: var(--secondary-color);
+  }
+
+  .result-message p {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+  }
+
+  .close-btn:hover {
+    color: var(--secondary-color);
+  }
+
+  .controls {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .control-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 58, 96, 0.3);
+  }
+
+  .control-btn:hover {
+    background: #ff2a50;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 58, 96, 0.4);
+  }
+
+  .control-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 768px) {
+    .luck-bg {
+      width: 16rem;
+      height: 16rem;
+    }
+
+    .prize-pointer {
+      width: 3rem;
+      height: 3rem;
+      margin-left: -1.5rem;
+      margin-top: -1.5rem;
+    }
+
+    .prize-pointer::after {
+      top: -1rem;
+      border-width: 0.8rem;
+      margin-left: -0.8rem;
+    }
+  }
+</style>
+
+<div class="luck-container">
+  <div class="luck-bg">
+    <div class="luck-wheel-bg">
+      <div class="luck-wheel-bg-main rotate-style" id="wheel-bg"></div>
+      <div class="wheel-main">
+        <div class="prize-list rotate-style" id="prize-list"></div>
+        <div class="prize-pointer" id="prize-pointer" title="点击抽奖"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="result-message" id="result-message">
+    <button class="close-btn" id="close-result">×</button>
+    <h3>恭喜您！</h3>
+    <p id="result-text"></p>
+  </div>
+  
+  <div class="controls">
+    <button class="control-btn" id="spin-btn">开始抽奖</button>
+  </div>
+</div>
+
+<script>
+  class LuckyWheel {
+    constructor() {
+      this.CIRCLE_ANGLE = 360;
+      this.BIG_SIZE = 24;
+      this.prizeList = [
+        { id: 1, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆10" },
+        { id: 2, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆20" },
+        { id: 3, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆30" },
+        { id: 4, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆40" },
+        { id: 5, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆50" },
+        { id: 6, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆60" },
+        { id: 7, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆70" },
+        { id: 8, img: 'https://img01.yzcdn.cn/vant/cat.jpeg', prize_name: "乐豆80" }
+      ];
+      
+      this.angleList = [];
+      this.isRotating = false;
+      this.rotateAngle = 0;
+      this.currentPrizeIndex = -1;
+      
+      this.elements = {
+        wheelBg: document.getElementById('wheel-bg'),
+        prizeList: document.getElementById('prize-list'),
+        prizePointer: document.getElementById('prize-pointer'),
+        spinBtn: document.getElementById('spin-btn'),
+        resultMessage: document.getElementById('result-message'),
+        resultText: document.getElementById('result-text'),
+        closeResult: document.getElementById('close-result')
+      };
+      
+      this.config = {
+        duration: 5000,
+        circle: 8,
+        mode: "ease-in-out"
+      };
+      
+      this.init();
+    }
+    
+    init() {
+      this.formatPrizeList();
+      this.prizeAddHtml();
+      this.bindEvents();
+    }
+    
+    formatPrizeList() {
+      const l = this.prizeList.length;
+      const average = this.CIRCLE_ANGLE / l;
+      const half = average / 2;
+      const rightBig = l === 2 ? '50' : '0';
+      const heightBig = l <= 3 ? '100' : '50';
+      const topBig = l === 3 ? '-50' : '0';
+      const skewMain = l <= 2 ? 0 : -(l - 4) * 90 / l;
+      
+      this.prizeList.forEach((item, i) => {
+        const angle = -(i * average + half);
+        const bigAge = l > 2 ? i * this.CIRCLE_ANGLE / l : '0';
+        
+        item.style = `
+          transform: rotate(${-angle}deg);
+          width: ${100 / l * 2}%;
+          margin-left: -${100 / l}%;
+          font-size: ${this.BIG_SIZE - l}px;
+        `;
+        
+        item.style2 = `
+          transform: rotate(${bigAge}deg) skewY(${skewMain}deg);
+          right: ${rightBig * i}%;
+          height: ${heightBig}%;
+          top: ${topBig}%;
+          width: ${l === 1 ? 100 : 50}%;
+        `;
+        
+        this.angleList.push(angle);
+      });
+    }
+    
+    prizeAddHtml() {
+      let htmlBg = '';
+      let htmlDiv = '';
+      
+      this.prizeList.forEach((item, i) => {
+        htmlBg += `<div class="luck-wheel-sector" style="${item.style2}"></div>`;
+        htmlDiv += `
+          <div class="prize-item" style="${item.style}">
+            <div>${item.prize_name}</div>
+            <div style="padding-top:5px;">
+              <img src="${item.img}" alt="${item.prize_name}" />
+            </div>
+          </div>
+        `;
+      });
+      
+      this.elements.wheelBg.innerHTML = htmlBg;
+      this.elements.prizeList.innerHTML = htmlDiv;
+    }
+    
+    bindEvents() {
+      this.elements.prizePointer.addEventListener('click', () => this.prizeRoll());
+      this.elements.spinBtn.addEventListener('click', () => this.prizeRoll());
+      this.elements.closeResult.addEventListener('click', () => this.hideResult());
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !this.isRotating) {
+          e.preventDefault();
+          this.prizeRoll();
+        }
+      });
+    }
+    
+    prizeRoll() {
+      if (this.isRotating) {
+        console.log('正在抽奖中，请稍候...');
+        return;
+      }
+      
+      this.currentPrizeIndex = Math.floor(Math.random() * this.prizeList.length);
+      console.log(`抽中奖品ID: ${this.prizeList[this.currentPrizeIndex].id}, 名称: ${this.prizeList[this.currentPrizeIndex].prize_name}`);
+      
+      this.rotating();
+    }
+    
+    rotating() {
+      this.isRotating = true;
+      this.elements.spinBtn.disabled = true;
+      this.elements.spinBtn.textContent = '抽奖中...';
+      
+      const angle = this.rotateAngle +
+        this.config.circle * this.CIRCLE_ANGLE +
+        this.angleList[this.currentPrizeIndex] -
+        (this.rotateAngle % this.CIRCLE_ANGLE);
+      
+      this.rotateAngle = angle;
+      
+      this.elements.wheelBg.style.transform = `rotate(${this.rotateAngle}deg)`;
+      this.elements.prizeList.style.transform = `rotate(${this.rotateAngle}deg)`;
+      
+      setTimeout(() => {
+        this.isRotating = false;
+        this.elements.spinBtn.disabled = false;
+        this.elements.spinBtn.textContent = '开始抽奖';
+        this.showResult();
+        console.log('旋转结束');
+      }, this.config.duration + 500);
+    }
+    
+    showResult() {
+      const prize = this.prizeList[this.currentPrizeIndex];
+      this.elements.resultText.textContent = `恭喜获得：${prize.prize_name}`;
+      this.elements.resultMessage.classList.add('show');
+    }
+    
+    hideResult() {
+      this.elements.resultMessage.classList.remove('show');
+    }
+    
+    // 可选：设置特定奖品的方法
+    setPrizeById(prizeId) {
+      const index = this.prizeList.findIndex(item => item.id === prizeId);
+      if (index !== -1) {
+        this.currentPrizeIndex = index;
+        return true;
+      }
+      console.warn(`未找到ID为${prizeId}的奖品`);
+      return false;
+    }
+    
+    // 可选：更新奖品列表
+    updatePrizeList(newList) {
+      if (Array.isArray(newList) && newList.length > 0) {
+        this.prizeList = newList;
+        this.angleList = [];
+        this.formatPrizeList();
+        this.prizeAddHtml();
+        console.log('奖品列表已更新');
+      }
+    }
+  }
+
+  // 初始化抽奖转盘
+  document.addEventListener('DOMContentLoaded', () => {
+    const luckyWheel = new LuckyWheel();
+    
+    // 可以在这里添加自定义奖品
+    // const customPrizes = [
+    //   { id: 1, img: 'prize1.jpg', prize_name: "一等奖" },
+    //   { id: 2, img: 'prize2.jpg', prize_name: "二等奖" },
+    // ];
+    // luckyWheel.updatePrizeList(customPrizes);
+  });
+</script>
